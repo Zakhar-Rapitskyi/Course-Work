@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+    <title>Проміжні станції</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">Залізниця</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/sortByStation}">Сортувати за станцією</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<h1 style="text-align: center;">
+    <span class="level2">
+        <span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Розклад руху<br/>призначених пасажирських поїздів
+        </span>
+    </span>
+</h1>
+<h3 style="text-align: center;">Інформація за номером поїзда
+    <span th:text="${train.id}"></span>
+</h3>
+<br>
+<table class="table ">
+    <thead class="thead-dark">
+    <tr>
+        <th>Початкова станція</th>
+        <th>Кінцева станція</th>
+        <th>Номер поїзда</th>
+        <th>Відправлення</th>
+        <th>Прибуття</th>
+        <th>Дистанція</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${train.startStation}">
+        <td th:text="${train.endStation}">
+        <td th:text="${train.id}">
+        <td th:text="${train.departureTime}">
+        <td th:text="${train.arrivalTime}">
+        <td th:text="${train.distance}+' км'">
+    </tr>
+    </tbody>
+</table>
+<h4 style="text-align: center;">Маршрут руху</h4>
+
+<ul style="text-align: center;">
+    <li th:each="station: ${train.intermediateStations}">
+        <span th:text="${station.name}"></span>
+        <span th:text="' (' + ${station.arrival} + ')'"></span>
+    </li>
+</ul>
+</body>
+</html>

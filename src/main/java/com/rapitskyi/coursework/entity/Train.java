@@ -1,21 +1,18 @@
 package com.rapitskyi.coursework.entity;
 
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-@Setter
 public class Train {
     private int id;
     private String startStation;
     private String endStation;
-    private List<String> intermediateStations;
-    private Date departureTime;
-    private Date arrivalTime;
+    private List<IntermidiateStation> intermediateStations;
+    private String departureTime;
+    private String arrivalTime;
     private double distance;
 
     public void setId(int id) {
@@ -30,15 +27,11 @@ public class Train {
         this.endStation = endStation;
     }
 
-    public void setIntermediateStations(List<String> intermediateStations) {
-        this.intermediateStations = intermediateStations;
-    }
-
-    public void setDepartureTime(Date departureTime) {
+    public void setDepartureTime(String departureTime) {
         this.departureTime = departureTime;
     }
 
-    public void setArrivalTime(Date arrivalTime) {
+    public void setArrivalTime(String arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 
@@ -46,15 +39,20 @@ public class Train {
         this.distance = distance;
     }
 
+    public void addIntermediateStation(String stationName, String arrival) {
+        intermediateStations.add(intermediateStations.size() - 1, new IntermidiateStation(stationName, arrival));
+    }
+
     public Train() {
     }
 
-    public Train(int id, String startStation, String endStation,
-                 List<String> intermediateStations, Date departureTime, Date arrivalTime, double distance) {
+    public Train(int id, String startStation, String endStation, String departureTime, String arrivalTime, double distance) {
         this.id = id;
         this.startStation = startStation;
         this.endStation = endStation;
-        this.intermediateStations = intermediateStations;
+        this.intermediateStations = new LinkedList<>();
+        intermediateStations.add(new IntermidiateStation(startStation, departureTime));
+        intermediateStations.add(new IntermidiateStation(endStation, arrivalTime));
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         this.distance = distance;
@@ -64,7 +62,7 @@ public class Train {
         this.id = other.id;
         this.startStation = other.startStation;
         this.endStation = other.endStation;
-        this.intermediateStations = new ArrayList<>(other.intermediateStations);
+        this.intermediateStations = new LinkedList<>(other.intermediateStations);
         this.departureTime = other.departureTime;
         this.arrivalTime = other.arrivalTime;
         this.distance = other.distance;
@@ -81,5 +79,8 @@ public class Train {
                 ", arrivalTime=" + arrivalTime +
                 ", distance=" + distance +
                 '}';
+    }
+
+    record IntermidiateStation(String name, String arrival) {
     }
 }

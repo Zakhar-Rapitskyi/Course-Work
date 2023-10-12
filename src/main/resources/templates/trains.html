@@ -8,14 +8,49 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
+    <link style="#stationForm {display: block;}">
     <title>Document</title>
 </head>
 <body>
-<div class="container center">
+<nav class=" navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">Залізниця</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/sortByStation}">Сортувати за станцією</a>
+                </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="nav-link active" aria-current="page" onclick="showStationForm()">Знайти а станцію
+                    </button>
+                    <script>
+                        const stationForm = document.getElementById("stationForm");
+                        if (stationForm.style.display === "none") {
+                            stationForm.style.display = "block";
+                        } else {
+                            stationForm.style.display = "none";
+                        }</script>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div id="stationForm">
+    <form th:action="@{/findByStation}" method="post">
+        <label for="station">Введіть станцію:</label>
+        <input type="text" id="station" name="station">
+        <button type="submit">Пошук</button>
+    </form>
+</div>
+<div class="container">
     <table class="table table-bordered table-striped table-hover">
         <thead class="thead-dark">
         <tr>
-            <th> Номер поїзда</th>
+            <th>Номер поїзда</th>
             <th>Початкова станція</th>
             <th>Кінцева станція</th>
             <th>Час відправлення</th>
@@ -24,14 +59,14 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="train: ${trains}">
+        <tr th:each="train: ${trains.getTrains()}">
             <td th:text="${train.id}"></td>
             <td th:text="${train.startStation}"></td>
             <td th:text="${train.endStation}"></td>
             <td th:text="${train.departureTime}"></td>
             <td th:text="${train.arrivalTime}"></td>
             <td th:text="${train.distance}"></td>
-            <td><a th:href="@{/intermediateStations/{id}(id=${train.id})}">Деталі рейсу</a></td>
+            <td><a th:href="@{/trainDetails/{id}(id=${train.id})}">Деталі рейсу</a></td>
         </tr>
         </tbody>
     </table>
