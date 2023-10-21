@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+    <title>Main</title>
+</head>
+<body>
+<div id="content" class="card-body">
+    <div id="cpn-uvaga" class="simpletext">
+        <h1 style="text-align: center;">
+            <span class="level2">
+                <span>
+                    Розклад руху<br>призначених пасажирських поїздів
+                </span>
+            </span>
+        </h1>
+    </div>
+    <br/>
+    <br/>
+    <form method="post" action="/trains">
+        <h2>Розклад руху між станціями</h2>
+        <div>
+            <h3 class="title_timetable">Розклад руху між станціями пасажирських та регіональних поїздів</h3>
+            <div class="clearer h5"></div>
+            <div class="form_timetable form_timetable_1">
+                <label for="from-station">Від станції:</label>
+                <div class="search-alone from-station">
+                    <input class="form-control"
+                           id="from-station"
+                           placeholder="Введіть назву станції"
+                           name="fromStation"
+                           type="text"
+                           list="fromstationSuggestions"
+                           autocomplete="off"
+                           required>
+                    <datalist id="fromstationSuggestions" class="suggestions">
+                        <option th:each="station : ${stations}" th:value="${station}"></option>
+                    </datalist>
+                </div>
+            </div>
+            <div class="clearer"></div>
+            <div class="form_timetable form_timetable_2">
+                <label for="to-station">До станції:</label>
+                <div class="search-alone to-station">
+                    <input class="form-control"
+                           id="to-station"
+                           placeholder="Введіть назву станції"
+                           name="toStation"
+                           type="text"
+                           list="tostationSuggestions"
+                           autocomplete="off"
+                           required>
+                    <datalist id="tostationSuggestions" class="suggestions">
+                        <option th:each="station : ${stations}" th:value="${station}"></option>
+                    </datalist>
+                </div>
+            </div>
+            <div class="clearer h5"></div>
+            <div class="form_timetable form_timetable_3">
+                <label>
+                    <select name="isDeparture">
+                        <option value="true">Час відправлення</option>
+                        <option value="false">Час прибуття</option>
+                    </select>
+                </label>
+                <label>
+                    <select name="timeFrom">
+                        <option value="00:00">00:00</option>
+                        <option value="01:00">01:00</option>
+                        <option value="02:00">02:00</option>
+                        <option value="03:00">03:00</option>
+                        <option value="04:00">04:00</option>
+                        <option value="05:00">05:00</option>
+                        <option value="06:00">06:00</option>
+                        <option value="07:00">07:00</option>
+                        <option value="08:00">08:00</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="19:00">19:00</option>
+                        <option value="20:00">20:00</option>
+                        <option value="21:00">21:00</option>
+                        <option value="22:00">22:00</option>
+                        <option value="23:00">23:00</option>
+                    </select>
+                </label>
+                <label>
+                    <select name="timeTo">
+                        <option value="23:00">23:00</option>
+                        <option value="22:00">22:00</option>
+                        <option value="21:00">21:00</option>
+                        <option value="20:00">20:00</option>
+                        <option value="19:00">19:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="09:00">09:00</option>
+                        <option value="08:00">08:00</option>
+                        <option value="07:00">07:00</option>
+                        <option value="06:00">06:00</option>
+                        <option value="05:00">05:00</option>
+                        <option value="04:00">04:00</option>
+                        <option value="03:00">03:00</option>
+                        <option value="02:00">02:00</option>
+                        <option value="01:00">01:00</option>
+                        <option value="00:00">00:00</option>
+                    </select>
+                </label>
+            </div>
+            <br>
+            <input type="button" onclick="aSubmit(1,this.form)" value="Пошук"/>
+        </div>
+    </form>
+    <br/>
+    <br/>
+    <form action="/station/">
+        <div class="form_timetable form_timetable_1">
+            <label for="just-station">Станція:</label>
+            <div class="search-alone from-station">
+                <input class="form-control"
+                       id="just-station"
+                       placeholder="Введіть назву станції"
+                       type="text"
+                       list="stationSuggestions"
+                       autocomplete="off"
+                       required>
+                <datalist id="stationSuggestions" class="suggestions">
+                    <option th:each="station : ${stations}" th:value="${station}"></option>
+                </datalist>
+            </div>
+        </div>
+        <br>
+        <input onclick="aSubmit(2,this.form)" type="button" value="Пошук"/>
+    </form>
+</div>
+<script type="text/javascript">
+    function aSubmit(inf, _form) {
+        let info = "";
+        let stations = Array.from(document.getElementById("stationSuggestions").options).map(option => option.value);
+
+        switch (inf) {
+            case 1:
+                if (!stations.includes(document.getElementById('from-station').value))
+                    info = "Виберіть пункт відправлення із випадаючого списку";
+                if (!stations.includes(document.getElementById('to-station').value))
+                    info = info + "\n" + "Виберіть пункт призначення із випадаючого списку";
+                break;
+            case 2:
+                if (!stations.includes(document.getElementById('just-station').value)) {
+                    info = "Виберіть маршрут прямування із випадаючого списку";
+                } else {
+                    _form.action = "/station/" + document.getElementById('just-station').value;
+                }
+                break;
+            case 3:
+                if (document.getElementById('station_out').value === '0')
+                    info = "Виберіть пункт відправлення із випадаючого списку";
+                break;
+        }
+        if (info.length < 1)
+            _form.submit();
+        else
+            alert(info);
+    }
+</script>
+</body>
+</html>

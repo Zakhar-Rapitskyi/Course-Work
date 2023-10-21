@@ -8,68 +8,41 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
-    <link style="#stationForm {display: block;}">
-    <title>Document</title>
 </head>
 <body>
-<nav class=" navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">Залізниця</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/sortByStation}">Сортувати за станцією</a>
-                </li>
-            </ul>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <button class="nav-link active" aria-current="page" onclick="showStationForm()">Знайти а станцію
-                    </button>
-                    <script>
-                        const stationForm = document.getElementById("stationForm");
-                        if (stationForm.style.display === "none") {
-                            stationForm.style.display = "block";
-                        } else {
-                            stationForm.style.display = "none";
-                        }</script>
-                </li>
-            </ul>
-        </div>
+        <a class="navbar-brand" href="/">Залізниця</a>
     </div>
 </nav>
-<div id="stationForm">
-    <form th:action="@{/findByStation}" method="post">
-        <label for="station">Введіть станцію:</label>
-        <input type="text" id="station" name="station">
-        <button type="submit">Пошук</button>
-    </form>
-</div>
+
 <div class="container">
+    <h1>Розклад руху пасажирських поїздів</h1>
+    <h3>Інформація щодо маршруту</h3>
     <table class="table table-bordered table-striped table-hover">
         <thead class="thead-dark">
         <tr>
-            <th>Номер поїзда</th>
-            <th>Початкова станція</th>
-            <th>Кінцева станція</th>
-            <th>Час відправлення</th>
-            <th>Час прибуття</th>
-            <th>Відстань</th>
+            <th><a href="/sort/id">Номер поїзда</a></th>
+            <th><a href="/sort/startStation">Початкова станція</a></th>
+            <th><a href="/sort/endStation">Кінцева станція</a></th>
+            <th><a href="/sort/departure">Час відправлення</a></th>
+            <th><a href="/sort/arrival">Час прибуття</a></th>
+            <th><a href="/sort/distance">Відстань</a></th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="train: ${trains.getTrains()}">
-            <td th:text="${train.id}"></td>
-            <td th:text="${train.startStation}"></td>
-            <td th:text="${train.endStation}"></td>
+        <tr th:each="train: ${trains}">
+            <td><a th:href="@{/trainDetails/{id}(id=${train.id})}"><span th:text="${train.id}"></span></a></td>
+            <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span th:text="${train.startStation}"></span></a></td>
+            <td><a th:href="@{/station/{name}(name=${train.endStation})}"><span th:text="${train.endStation}"></span></a></td>
             <td th:text="${train.departureTime}"></td>
             <td th:text="${train.arrivalTime}"></td>
             <td th:text="${train.distance}"></td>
-            <td><a th:href="@{/trainDetails/{id}(id=${train.id})}">Деталі рейсу</a></td>
         </tr>
         </tbody>
     </table>
 </div>
+
+
 </body>
 </html>
