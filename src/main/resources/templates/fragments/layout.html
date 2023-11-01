@@ -1,0 +1,57 @@
+<!doctype html>
+<html th:fragment="layout (template, menu)">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="shortcut icon" type="image/x-icon" th:href="@{https://cdn-icons-png.flaticon.com/128/2811/2811985.png}">
+
+  <title>Залізниця</title>
+
+  <link rel="stylesheet" href="/trains.css" />
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark" role="navigation">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="main-navbar" style>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" th:remove="all">
+          <li th:fragment="menuItem (link,active,title,glyph,text)" th:class="nav-item">
+            <a th:class="${active==menu ? 'nav-link active' : 'nav-link'}" th:href="@{__${link}__}" th:title="${title}">
+              <span th:class="'fa fa-'+${glyph}" class="fa fa-home"></span>
+              <span th:text="${text}">Template</span>
+            </a>
+          </li>
+
+        </ul>
+
+        <ul class="nav navbar-nav me-auto">
+          <li th:replace="~{::menuItem ('/','home','home page','home','Залізниця')}">
+            <span class="fa fa-home" aria-hidden="true"></span>
+            <span>Залізниця</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="container xd-container">
+
+      <th:block th:insert="${template}" />
+
+      <br />
+      <br />
+
+    </div>
+  </div>
+
+  <script th:src="@{/webjars/bootstrap/5.2.3/dist/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

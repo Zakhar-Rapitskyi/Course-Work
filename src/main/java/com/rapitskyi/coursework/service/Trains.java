@@ -61,8 +61,8 @@ public class Trains {
         }
     }
 
-    public static Trains findByRequest(TrainsRequest request) {
-        return new Trains(readFromFile().trains.stream().filter(train -> train.isMatchingRequest(request)).toList());
+    public Trains findByRequest(TrainsRequest request) {
+        return new Trains(trains.stream().filter(train -> train.isMatchingRequest(request)).toList());
     }
 
     public void writeToFile() {
@@ -150,20 +150,16 @@ public class Trains {
                 function = Train::getDistance;
                 break;
             default:
-                return trains;
+                throw new RuntimeException("Сортування за полем "+field+" неможливе");
         }
         return trains.stream().sorted(Comparator.comparing(function)).toList();
     }
 
     public Train getById(int id) {
-        try {
             return trains.stream()
                     .filter(t -> t.getId() == id)
                     .findFirst()
-                    .orElseThrow(TrainNotFoundException::new);
-        } catch (TrainNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+                    .orElseThrow(()->new TrainNotFoundException("train with id "+id+" not found"));
     }
 
     @Override

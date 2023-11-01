@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'error')}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,66 +10,52 @@
     <title>Проміжні станції</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">Залізниця</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/sortByStation}">Сортувати за станцією</a>
-                </li>
-            </ul>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/sortByStation}">Сортувати за станцією</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
 <h1 style="text-align: center;">
     <span class="level2">
         <span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Розклад руху<br/>призначених пасажирських поїздів
+            Розклад руху<br/>призначених пасажирських поїздів
         </span>
     </span>
 </h1>
 <h3 style="text-align: center;">Інформація за номером поїзда
-    <span th:text="${train.id}"></span>
+    <span th:text="'\''+${id}+'\''"></span>
+
 </h3>
 <br>
-<table class="table ">
-    <thead class="thead-dark">
-    <tr>
-        <th>Номер поїзда</th>
-        <th>Маршрут</th>
-        <th>Відправлення</th>
-        <th>Прибуття</th>
-        <th>Дистанція</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td th:text="${train.id}">
-        <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span
-                th:text="${train.startStation}"></span></a> - <a th:href="@{/station/{name}(name=${train.endStation})}"><span
-                th:text="${train.endStation}"></span></a></td>
-        <td th:text="${train.departureTime}">
-        <td th:text="${train.arrivalTime}">
-        <td th:text="${train.distance}+' км'">
-    </tr>
-    </tbody>
-</table>
-<h4 style="text-align: center;">Маршрут руху</h4>
-<div style="text-align: center;" th:each="station: ${train.intermediateStations}">
+<div th:if="${stationTrains != null}">
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            <th>Номер поїзда</th>
+            <th>Маршрут</th>
+            <th>Відправлення</th>
+            <th>Прибуття</th>
+            <th>Дистанція</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td th:text="${train.id}">
+            <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span
+                    th:text="${train.startStation}"></span></a>
+                - <a th:href="@{/station/{name}(name=${train.endStation})}"><span th:text="${train.endStation}"></span></a>
+            </td>
+            <td th:text="${train.departureTime}">
+            <td th:text="${train.arrivalTime}">
+            <td th:text="${train.distance}+' км'">
+        </tr>
+        </tbody>
+    </table>
+    <h4 style="text-align: center;">Маршрут руху</h4>
+    <div style="text-align: center;" th:each="station: ${train.intermediateStations}">
         <a th:href="@{/station/{name}(name=${station.name})}" th:text="${station.name}"></a>
         <span th:text="' (' + ${station.arrival} + ')'"></span><br><br>
+    </div>
 </div>
+<div th:if="${train == null}" style="text-align: center; color: red;">
+    <strong>Поїзда з таким номером немає.</strong>
+</div>
+
+
 </body>
 </html>
