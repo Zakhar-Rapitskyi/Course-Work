@@ -18,8 +18,11 @@ public class Train {
     private String arrivalTime;
     private double distance;
 
-    public Train(){}
+    //конструктор за замовчуванням
+    public Train() {
+    }
 
+    //конструктор з параметрами
     public Train(int id, String startStation, String endStation, String departureTime, String arrivalTime, double distance) {
         this.id = id;
         this.startStation = startStation;
@@ -32,6 +35,7 @@ public class Train {
         this.distance = distance;
     }
 
+    //конструктор копіювання
     public Train(Train other) {
         this.id = other.id;
         this.startStation = other.startStation;

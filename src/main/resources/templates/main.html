@@ -156,14 +156,10 @@
                 break;
             case 2:
                 if (!stations.includes(document.getElementById('just-station').value)) {
-                    info = "Виберіть маршрут прямування із випадаючого списку";
+                    info = "Виберіть станцію із випадаючого списку";
                 } else {
                     _form.action = "/station/" + document.getElementById('just-station').value;
                 }
-                break;
-            case 3:
-                if (document.getElementById('station_out').value === '0')
-                    info = "Виберіть пункт відправлення із випадаючого списку";
                 break;
         }
         if (info.length < 1)

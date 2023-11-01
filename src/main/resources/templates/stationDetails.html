@@ -8,34 +8,37 @@
         </span>
     </span>
 </h1>
-<div th:if="${!trains.trains.isEmpty()}">
-<h3 style="text-align: center;">Розклад по станції
-    <span th:text="${stationName}"></span>
-</h3>
+<div th:if="${trains!=null}">
+    <h3 style="text-align: center;">Розклад по станції
+        <span th:text="${stationName}"></span>
+    </h3>
 
-<div class="container">
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="thead-dark">
-        <tr>
-            <th>Номер поїзда</th>
-            <th>Маршрут</th>
-            <th th:text="'Час прибуття до '+${stationName}"></th>
-            <th>Прибуття на кінцеву станцію</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="train: ${trains.getTrains()}">
-            <td><a th:href="@{/trainDetails/{id}(id=${train.id})}"><span th:text="${train.id}"></span></a></td>
-            <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span th:text="${train.startStation}"></span></a> - <a th:href="@{/station/{name}(name=${train.endStation})}"><span th:text="${train.endStation}"></span></a></td>
-            <td th:text="${train.getIntermediateStation(stationName).arrival}"></td>
-            <td th:text="${train.arrivalTime}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="container">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th><a th:href="@{/station/{name}?field=id(name=${stationName})}">Номер поїзда</a></th>
+                <th><a th:href="@{/station/{name}?field=startStation(name=${stationName})}">Маршрут</a></th>
+                <th><a th:href="@{/station/{name}?field=stationArrival(name=${stationName})}"><span th:text="'Час прибуття до '+${stationName}"></span></a></th>
+                <th><a th:href="@{/station/{name}?field=arrival(name=${stationName})}">Прибуття на кінцеву станцію</a></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="train: ${trains.getTrains()}">
+                <td><a th:href="@{/trainDetails/{id}(id=${train.id})}"><span th:text="${train.id}"></span></a></td>
+                <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span
+                        th:text="${train.startStation}"></span></a> - <a
+                        th:href="@{/station/{name}(name=${train.endStation})}"><span
+                        th:text="${train.endStation}"></span></a></td>
+                <td th:text="${train.getIntermediateStation(stationName).arrival}"></td>
+                <td th:text="${train.arrivalTime}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-</div>
-<div th:if="${trains.trains.isEmpty()}" style="text-align: center; color: red;">
-    <strong>Станції не існує.</strong>
+<div th:if="${trains==null}" style="text-align: center; color: red;">
+    <strong th:text="${message}"></strong>
 </div>
 </body>
 </html>

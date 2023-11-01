@@ -1,7 +1,9 @@
 package com.rapitskyi.coursework.controller;
 
 import com.rapitskyi.coursework.dto.request.TrainsRequest;
+import com.rapitskyi.coursework.exception.StationNotFoundException;
 import com.rapitskyi.coursework.service.Trains;
+import jakarta.websocket.server.PathParam;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,7 +27,7 @@ public class MVCController {
     @RequestMapping("/trains")
     String getStationDetail(@ModelAttribute TrainsRequest request, Model model) {
         trainsInModel = trainsInFile.findByRequest(request);
-        model.addAttribute("trains", trainsInModel.getTrains());
+        model.addAttribute("trains", trainsInModel);
         model.addAttribute("trainsRequest", request);
         return "trains";
     }
@@ -33,15 +35,22 @@ public class MVCController {
     @RequestMapping("/sort/{field}")
     String getSortedTrains(Model model, @PathVariable String field) {
         model.addAttribute("trains", trainsInModel.sortedBy(field));
-        model.addAttribute("trainsRequest", new TrainsRequest(null,null,false,null,null));
         return "trains";
     }
 
     @RequestMapping("/station/{name}")
-    String getStationDetails(Model model, @PathVariable String name) {
+    String getStationDetails(Model model, @PathVariable String name, @PathParam("field") String field) {
         Trains stationTrains = trainsInFile.getThatRunThrough(name);
+        if (field != null) {
+            if (field.equals("stationArrival")) {
+                stationTrains = stationTrains.sortedBy(field, name);
+            } else {
+                stationTrains = stationTrains.sortedBy(field);
+            }
+        }
         model.addAttribute("stationName", name);
         model.addAttribute("trains", stationTrains);
+        if (!stations.contains(name)) throw new StationNotFoundException("Станції з ім'ям " + name + " не існує");
         return "stationDetails";
     }
 
@@ -53,7 +62,7 @@ public class MVCController {
     }
 
     @RequestMapping("/trains.css")
-    String getStyles(){
-        return "../static/css/petclinic.css";
+    String getStyles() {
+        return "../static/css/trains.css";
     }
 }

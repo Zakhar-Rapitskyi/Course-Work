@@ -16,7 +16,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="train: ${trains}">
+        <tr th:each="train: ${trains.trains}">
             <td><a th:href="@{/trainDetails/{id}(id=${train.id})}"><span th:text="${train.id}"></span></a></td>
             <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span th:text="${train.startStation}"></span></a></td>
             <td><a th:href="@{/station/{name}(name=${train.endStation})}"><span th:text="${train.endStation}"></span></a></td>

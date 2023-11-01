@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.rapitskyi.coursework.dto.request.TrainsRequest;
 import com.rapitskyi.coursework.entity.Train;
+import com.rapitskyi.coursework.exception.StationNotFoundException;
 import com.rapitskyi.coursework.exception.TrainNotFoundException;
 import lombok.Getter;
 
@@ -84,8 +85,8 @@ public class Trains {
         );
     }
 
-    public List<Train> sortedByStartStation() {
-        return mergeSortByStartStation(trains);
+    public Trains sortedByStartStation() {
+        return new Trains(mergeSortByStartStation(trains));
     }
 
     private List<Train> mergeSortByStartStation(List<Train> trainList) {
@@ -108,7 +109,7 @@ public class Trains {
         int i = 0, j = 0;
 
         while (i < left.size() && j < right.size()) {
-            if (left.get(i).getStartStation().compareTo(right.get(j).getStartStation()) <= 0) {
+            if (left.get(i).getStartStation().compareTo(right.get(j).getStartStation()) < 0) {
                 merged.add(left.get(i++));
             } else {
                 merged.add(right.get(j++));
@@ -126,8 +127,9 @@ public class Trains {
         return merged;
     }
 
-    public List<Train> sortedBy(String field) {
+    public Trains sortedBy(String field, String... stationName) {
         Function<Train, Comparable> function;
+        String name;
         switch (field) {
             case "id":
                 function = Train::getId;
@@ -149,17 +151,20 @@ public class Trains {
             case "distance":
                 function = Train::getDistance;
                 break;
+            case "stationArrival":
+                name = stationName[0];
+                return new Trains(trains.stream().sorted(Comparator.comparing(t -> LocalTime.parse(t.getIntermediateStation(name).arrival()))).toList());
             default:
-                throw new RuntimeException("Сортування за полем "+field+" неможливе");
+                throw new RuntimeException("Сортування за полем " + field + " неможливе");
         }
-        return trains.stream().sorted(Comparator.comparing(function)).toList();
+        return new Trains(trains.stream().sorted(Comparator.comparing(function)).toList());
     }
 
     public Train getById(int id) {
-            return trains.stream()
-                    .filter(t -> t.getId() == id)
-                    .findFirst()
-                    .orElseThrow(()->new TrainNotFoundException("train with id "+id+" not found"));
+        return trains.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new TrainNotFoundException("train with id " + id + " not found"));
     }
 
     @Override
