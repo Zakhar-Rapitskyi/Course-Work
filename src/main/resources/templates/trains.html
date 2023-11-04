@@ -7,12 +7,13 @@
     <table class="table table-bordered table-striped table-hover">
         <thead class="thead-dark">
         <tr>
-            <th><a href="/sort/id">Номер поїзда</a></th>
-            <th><a href="/sort/startStation">Початкова станція</a></th>
-            <th><a href="/sort/endStation">Кінцева станція</a></th>
-            <th><a href="/sort/departure">Час відправлення</a></th>
-            <th><a href="/sort/arrival">Час прибуття</a></th>
-            <th><a href="/sort/distance">Відстань</a></th>
+            <th><a href="/trains?field=id">Номер поїзда</a></th>
+            <th><a href="/trains?field=startStation">Початкова станція</a></th>
+            <th><a href="/trains?field=endStation">Кінцева станція</a></th>
+            <th><a href="/trains?field=stationDeparture">Час відправлення з <span th:text="${request.fromStation()}"></span></a></th>
+            <th><a href="/trains?field=stationArrival">Час прибуття до <span th:text="${request.toStation()}"></span></a></th>
+            <th><a href="/trains?field=distance">Відстань</a></th>
+            <th><a href="/trains?field=avgSpeed">Сер. Швидкість</a></th>
         </tr>
         </thead>
         <tbody>
@@ -20,9 +21,10 @@
             <td><a th:href="@{/trainDetails/{id}(id=${train.id})}"><span th:text="${train.id}"></span></a></td>
             <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span th:text="${train.startStation}"></span></a></td>
             <td><a th:href="@{/station/{name}(name=${train.endStation})}"><span th:text="${train.endStation}"></span></a></td>
-            <td th:text="${train.departureTime}"></td>
-            <td th:text="${train.arrivalTime}"></td>
+            <td th:text="${train.getIntermediateStation(request.fromStation()).arrival()}"></td>
+            <td th:text="${train.getIntermediateStation(request.toStation()).arrival()}"></td>
             <td th:text="${train.distance}"></td>
+            <td th:text="${train.getAverageSpeed()}+' км/год'"></td>
         </tr>
         </tbody>
     </table>

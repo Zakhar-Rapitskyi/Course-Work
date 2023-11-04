@@ -8,7 +8,7 @@
         </span>
     </span>
 </h1>
-<div th:if="${trains!=null}">
+<div th:if="${message==null}">
     <h3 style="text-align: center;">Розклад по станції
         <span th:text="${stationName}"></span>
     </h3>
@@ -17,19 +17,17 @@
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">
             <tr>
-                <th><a th:href="@{/station/{name}?field=id(name=${stationName})}">Номер поїзда</a></th>
-                <th><a th:href="@{/station/{name}?field=startStation(name=${stationName})}">Маршрут</a></th>
-                <th><a th:href="@{/station/{name}?field=stationArrival(name=${stationName})}"><span th:text="'Час прибуття до '+${stationName}"></span></a></th>
-                <th><a th:href="@{/station/{name}?field=arrival(name=${stationName})}">Прибуття на кінцеву станцію</a></th>
+                <th><a th:href="@{'/station/'+${stationName}+'?field=id'}">Номер поїзда</a></th>
+                <th><a th:href="@{'/station/'+${stationName}+'?field=startStation'}">Маршрут</a></th>
+                <th><a th:href="@{'/station/'+${stationName}+'?field=stationArrival'}" th:text="'Час прибуття до '+${stationName}"></a></th>
+                <th><a th:href="@{'/station/'+${stationName}+'?field=arrival'}">Прибуття на кінцеву станцію</a></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="train: ${trains.getTrains()}">
-                <td><a th:href="@{/trainDetails/{id}(id=${train.id})}"><span th:text="${train.id}"></span></a></td>
-                <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span
-                        th:text="${train.startStation}"></span></a> - <a
-                        th:href="@{/station/{name}(name=${train.endStation})}"><span
-                        th:text="${train.endStation}"></span></a></td>
+                <td><a th:href="@{/trainDetails/{id}(id=${train.id})}" th:text="${train.id}"></a></td>
+                <td><a th:href="@{/station/{name}(name=${train.startStation})}" th:text="${train.startStation}"></a> -
+                    <a th:href="@{/station/{name}(name=${train.endStation})}" th:text="${train.endStation}"></a></td>
                 <td th:text="${train.getIntermediateStation(stationName).arrival}"></td>
                 <td th:text="${train.arrivalTime}"></td>
             </tr>
@@ -37,7 +35,7 @@
         </table>
     </div>
 </div>
-<div th:if="${trains==null}" style="text-align: center; color: red;">
+<div th:if="${message!=null}" style="text-align: center; color: red;">
     <strong th:text="${message}"></strong>
 </div>
 </body>

@@ -153,6 +153,8 @@
                     info = "Виберіть пункт відправлення із випадаючого списку";
                 if (!stations.includes(document.getElementById('to-station').value))
                     info = info + "\n" + "Виберіть пункт призначення із випадаючого списку";
+                if(document.getElementById('from-station').value===document.getElementById('to-station').value)
+                    info = "Станція відправлення не може збігатися зі станцією прибуття";
                 break;
             case 2:
                 if (!stations.includes(document.getElementById('just-station').value)) {

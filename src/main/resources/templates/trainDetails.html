@@ -10,10 +10,9 @@
 </h1>
 <h3 style="text-align: center;">Інформація за номером поїзда
     <span th:text="'\''+${id}+'\''"></span>
-
 </h3>
 <br>
-<div th:if="${train != null}">
+<div th:if="${message == null}">
     <table class="table ">
         <thead class="thead-dark">
         <tr>
@@ -27,10 +26,8 @@
         <tbody>
         <tr>
             <td th:text="${train.id}">
-            <td><a th:href="@{/station/{name}(name=${train.startStation})}"><span
-                    th:text="${train.startStation}"></span></a>
-                - <a th:href="@{/station/{name}(name=${train.endStation})}"><span th:text="${train.endStation}"></span></a>
-            </td>
+            <td><a th:href="@{/station/{name}(name=${train.startStation})}" th:text="${train.startStation}"></a> -
+                <a th:href="@{/station/{name}(name=${train.endStation})}" th:text="${train.endStation}"></a></td>
             <td th:text="${train.departureTime}">
             <td th:text="${train.arrivalTime}">
             <td th:text="${train.distance}+' км'">
@@ -38,12 +35,22 @@
         </tbody>
     </table>
     <h4 style="text-align: center;">Маршрут руху</h4>
-    <div style="text-align: center;" th:each="station: ${train.intermediateStations}">
-        <a th:href="@{/station/{name}(name=${station.name})}" th:text="${station.name}"></a>
-        <span th:text="' (' + ${station.arrival} + ')'"></span><br><br>
-    </div>
+    <table class="table table-bordered table-striped" style="width: 50%;margin: auto;">
+        <thead class="thead-dark">
+        <tr>
+            <th>Станція</th>
+            <th>Прибуття</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="station: ${train.intermediateStations}">
+            <td><a th:href="@{/station/{name}(name=${station.name})}" th:text="${station.name}"></a></td>
+            <td th:text="' (' + ${station.arrival} + ')'">
+        </tr>
+        </tbody>
+    </table>
 </div>
-<div th:if="${train == null}" style="text-align: center; color: red;">
+<div th:if="${message != null}" style="text-align: center; color: red;">
     <strong th:text="${message}"></strong>
 </div>
 

@@ -3,6 +3,7 @@ package com.rapitskyi.coursework.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.rapitskyi.coursework.controller.MVCController;
 import com.rapitskyi.coursework.dto.request.TrainsRequest;
 import com.rapitskyi.coursework.entity.Train;
 import com.rapitskyi.coursework.exception.StationNotFoundException;
@@ -10,10 +11,12 @@ import com.rapitskyi.coursework.exception.TrainNotFoundException;
 import lombok.Getter;
 
 import java.io.*;
+import java.text.Collator;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Stream;
+
+import static com.rapitskyi.coursework.controller.MVCController.stations;
 
 @Getter
 public class Trains {
@@ -23,13 +26,16 @@ public class Trains {
         trains = new ArrayList<>();
     }
 
-    public Trains(Train... train) {
-        trains = new ArrayList<>();
-        trains.addAll(Stream.of(train).sorted(Comparator.comparing(t -> LocalTime.parse(t.getDepartureTime()))).toList());
-    }
-
     public Trains(List<Train> trains) {
         this.trains = trains;
+    }
+
+    public boolean add(Train train) {
+        List<String> stations = MVCController.stations;
+        List<String> intermediateStations = train.getIntermediateStations().stream().map(Train.IntermediateStation::name).toList();
+        if (!new HashSet<>(stations).containsAll(intermediateStations))
+            throw new StationNotFoundException("Неможливо додати поїзд бо станції не існує");
+        return trains.add(train);
     }
 
     public static List<String> readStationsFromFile() {
@@ -62,10 +68,6 @@ public class Trains {
         }
     }
 
-    public Trains findByRequest(TrainsRequest request) {
-        return new Trains(trains.stream().filter(train -> train.isMatchingRequest(request)).toList());
-    }
-
     public void writeToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("trains.json"))) {
             Gson gson = new Gson();
@@ -78,7 +80,13 @@ public class Trains {
         }
     }
 
+    public Trains findByRequest(TrainsRequest request) {
+        return new Trains(trains.stream().filter(train -> train.isMatchingRequest(request)).toList());
+    }
+
     public Trains getThatRunThrough(String station) {
+        if (!stations.contains(station)) throw new StationNotFoundException("Станції з ім'ям " + station + " не існує");
+
         return new Trains(
                 trains.stream()
                         .filter(t -> t.getIntermediateStations().stream().anyMatch(st -> st.name().equals(station))).toList()
@@ -86,10 +94,10 @@ public class Trains {
     }
 
     public Trains sortedByStartStation() {
-        return new Trains(mergeSortByStartStation(trains));
+        return new Trains(mergeSort(trains));
     }
 
-    private List<Train> mergeSortByStartStation(List<Train> trainList) {
+    private List<Train> mergeSort(List<Train> trainList) {
         if (trainList.size() <= 1) {
             return trainList;
         }
@@ -98,18 +106,18 @@ public class Trains {
         List<Train> left = trainList.subList(0, middle);
         List<Train> right = trainList.subList(middle, trainList.size());
 
-        left = mergeSortByStartStation(left);
-        right = mergeSortByStartStation(right);
+        left = mergeSort(left);
+        right = mergeSort(right);
 
-        return merge(left, right);
+        return mergeByStartStation(left, right);
     }
 
-    private List<Train> merge(List<Train> left, List<Train> right) {
+    private List<Train> mergeByStartStation(List<Train> left, List<Train> right) {
         List<Train> merged = new ArrayList<>();
         int i = 0, j = 0;
 
         while (i < left.size() && j < right.size()) {
-            if (left.get(i).getStartStation().compareTo(right.get(j).getStartStation()) < 0) {
+            if (Collator.getInstance(new Locale("uk", "UA")).compare(left.get(i).getStartStation(), right.get(j).getStartStation()) < 0) {
                 merged.add(left.get(i++));
             } else {
                 merged.add(right.get(j++));
@@ -129,7 +137,6 @@ public class Trains {
 
     public Trains sortedBy(String field, String... stationName) {
         Function<Train, Comparable> function;
-        String name;
         switch (field) {
             case "id":
                 function = Train::getId;
@@ -137,8 +144,8 @@ public class Trains {
             case "startStation":
                 return sortedByStartStation();
             case "endStation":
-                function = Train::getEndStation;
-                break;
+                Collator collator = Collator.getInstance(new Locale("uk", "UA"));
+                return new Trains(trains.stream().sorted((t1, t2) -> collator.compare(t1.getEndStation(), t2.getEndStation())).toList());
             case "departure":
                 function = t -> LocalTime.parse(t.getDepartureTime());
                 break;
@@ -151,9 +158,8 @@ public class Trains {
             case "distance":
                 function = Train::getDistance;
                 break;
-            case "stationArrival":
-                name = stationName[0];
-                return new Trains(trains.stream().sorted(Comparator.comparing(t -> LocalTime.parse(t.getIntermediateStation(name).arrival()))).toList());
+            case "stationDeparture","stationArrival":
+                return new Trains(trains.stream().sorted(Comparator.comparing(t -> LocalTime.parse(t.getIntermediateStation(stationName[0]).arrival()))).toList());
             default:
                 throw new RuntimeException("Сортування за полем " + field + " неможливе");
         }
@@ -164,7 +170,7 @@ public class Trains {
         return trains.stream()
                 .filter(t -> t.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new TrainNotFoundException("train with id " + id + " not found"));
+                .orElseThrow(() -> new TrainNotFoundException("Поїзда з номером " + id + " не знайдено"));
     }
 
     @Override

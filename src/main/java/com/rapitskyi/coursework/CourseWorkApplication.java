@@ -2,10 +2,13 @@ package com.rapitskyi.coursework;
 
 import com.rapitskyi.coursework.entity.Train;
 import com.rapitskyi.coursework.service.Trains;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+
+import java.time.LocalTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 @SpringBootApplication
 public class CourseWorkApplication {
@@ -16,31 +19,62 @@ public class CourseWorkApplication {
 //    @Bean
 //    CommandLineRunner commandLineRunner() {
 //        return args -> {
-//            Trains trains = new Trains(
-//                    new Train(1, "Львів", "Коломия", "08:00", "12:00", 5676),
-//                    new Train(2, "Тернопіль", "Коломия", "14:30", "20:00", 8735),
-//                    new Train(3, "Бережани", "Коломия", "00:00", "14:30", 24657),
-//                    new Train(4, "Бережани", "Коломия", "14:30", "18:45", 257),
-//                    new Train(5, "Івано-Франківськ", "Коломия", "14:30", "16:29", 87768),
-//                    new Train(6, "Київ", "Коломия", "07:00", "22:00", 35));
-//            trains.getById(1).addIntermediateStation("Івано-Франківськ", "10:00");
-//
-//            trains.getById(2).addIntermediateStation("Бережани", "16:00");
-//            trains.getById(2).addIntermediateStation("Рогатин", "17:00");
-//
-//            trains.getById(3).addIntermediateStation("Рогатин", "10:00");
-//
-//            trains.getById(4).addIntermediateStation("Рогатин", "15:00");
-//            trains.getById(4).addIntermediateStation("Галич", "16:00");
-//
-//            trains.getById(5).addIntermediateStation("Рогатин", "15:00");
-//
-//            trains.getById(6).addIntermediateStation("Хмельницький", "10:00");
-//            trains.getById(6).addIntermediateStation("Вінниця", "12:00");
-//            trains.getById(6).addIntermediateStation("Тернопіль", "17:00");
-//            trains.getById(6).addIntermediateStation("Рогатин", "18:00");
-//
-//            trains.writeToFile();
+//            initializeFileWithTrains(1000);
 //        };
 //    }
+
+    private static void initializeFileWithTrains(int count) {
+        List<String> stationNames = Trains.readStationsFromFile();
+        Trains trains = new Trains();
+        Train train = new Train(1, "Коломия", "Київ", "01:23", "09:43", 657);
+        train.addIntermediateStation("Тернопіль", "03:35");
+        train.addIntermediateStation("Хмельницький", "04:41");
+        train.addIntermediateStation("Вінниця", "06:18");
+        trains.add(train);
+
+        train = new Train(2, "Івано-Франківськ", "Одеса", "14:30", "21:00", 462);
+        train.addIntermediateStation("Львів", "16:35");
+        train.addIntermediateStation("Тернопіль", "18:07");
+        train.addIntermediateStation("Хмельницький", "19:43");
+        train.addIntermediateStation("Жмеринка", "20:36");
+        trains.add(train);
+
+        Random random = new Random();
+
+        for (int i = 3; i <= count; i++) {
+            String startStation = stationNames.get(random.nextInt(stationNames.size()));
+            String endStation = stationNames.get(random.nextInt(stationNames.size()));
+
+            while (startStation.equals(endStation))
+                endStation = stationNames.get(random.nextInt(stationNames.size()));
+
+
+            String departureTime = String.format("%02d:%02d", random.nextInt(24), random.nextInt(60));
+            double distance = random.nextInt(1000);
+
+            List<Train.IntermediateStation> intermediateStations = new LinkedList<>();
+            // Додамо випадкову кількість проміжних станцій
+            int numStations = random.nextInt(5) + 1;
+            String currentTime = departureTime;
+            for (int j = 0; j < numStations; j++) {
+                String intermediateStationName = stationNames.get(random.nextInt(stationNames.size()));
+                while (containsName(train, intermediateStationName))
+                    intermediateStationName = stationNames.get(random.nextInt(stationNames.size()));
+
+                int hours = random.nextInt(3);
+                int minutes = random.nextInt(60);
+                LocalTime intermediateArrivalTime = LocalTime.parse(currentTime).plusHours(hours).plusMinutes(minutes);
+                intermediateStations.add(new Train.IntermediateStation(intermediateStationName, intermediateArrivalTime.toString()));
+                currentTime = intermediateArrivalTime.toString();
+            }
+            train = new Train(i, startStation, endStation, departureTime, LocalTime.parse(currentTime).plusHours(1).plusMinutes(23).toString(), distance);
+            train.addIntermediateStations(intermediateStations);
+            trains.add(train);
+        }
+        trains.writeToFile();
+    }
+
+    private static boolean containsName(Train train, String intermediateStationName) {
+        return train.getIntermediateStations().stream().anyMatch(st -> st.name().equals(intermediateStationName));
+    }
 }
